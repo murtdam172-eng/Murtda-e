@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: mortada-empire
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    plan: free
+    envVars:
+      - key: ADMIN_USER
+        value: mortada
+      - key: ADMIN_PASSWORD
+        generateValue: true
+        
