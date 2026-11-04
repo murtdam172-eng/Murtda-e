@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MORTADA EMPIRE</title>
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f3f7fc;
+    color:#172b4d;
+}
+header{
+    background:#0866d6;
+    color:white;
+    padding:22px 15px;
+    text-align:center;
+}
+header h1{margin:0;font-size:25px}
+header p{margin:9px 0 0}
+main{
+    max-width:650px;
+    margin:35px auto;
+    padding:20px;
+}
+.card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 5px 25px #00000012;
+}
+h2{text-align:center;color:#0866d6}
+input,select,button{
+    width:100%;
+    padding:15px;
+    margin-top:13px;
+    border-radius:10px;
+    font-size:16px;
+}
+input,select{
+    border:1px solid #ccd8e8;
+    background:white;
+}
+button{
+    border:0;
+    background:#0866d6;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:disabled{opacity:.6}
+#downloadBtn{background:#079447}
+#result{
+    margin-top:20px;
+    padding:12px;
+    border-radius:10px;
+    background:#f1f6ff;
+    display:none;
+    overflow-wrap:anywhere;
+}
+#thumb{
+    width:100%;
+    border-radius:12px;
+    margin-top:12px;
+    display:none;
+}
+footer{
+    text-align:center;
+    padding:25px;
+    color:#65758b;
+}
+.small{font-size:13px;color:#667}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>👑 MORTADA EMPIRE</h1>
+    <p>منصتك لتحميل الفيديوهات بسهولة</p>
+</header>
+
+<main>
+<div class="card">
+    <h2>📥 تحميل الفيديوهات</h2>
+    <p style="text-align:center">
+        ضع رابط الفيديو ثم اضغط على فحص الرابط
+    </p>
+
+    <input id="url" type="url"
+    placeholder="ضع رابط الفيديو هنا..." required>
+
+    <button id="infoBtn" onclick="getInfo()">
+        🔎 فحص الرابط
+    </button>
+
+    <div id="result">
+        <h3 id="title"></h3>
+        <p id="platform"></p>
+        <img id="thumb" alt="صورة الفيديو">
+    </div>
+
+    <label for="quality">اختر جودة التحميل:</label>
+    <select id="quality">
+        <option value="best">أفضل جودة متاحة</option>
+        <option value="720">720p</option>
+        <option value="480">480p</option>
+        <option value="audio">صوت MP3</option>
+    </select>
+
+    <button id="downloadBtn" onclick="downloadVideo()">
+        ⬇️ تحميل الآن
+    </button>
+
+    <p id="message" style="text-align:center"></p>
+    <p class="small" style="text-align:center">
+        استخدم الخدمة للمحتوى الذي تملك حق تنزيله.
+    </p>
+</div>
+</main>
+
+<footer>
+    <p>🇸🇩 MORTADA EMPIRE</p>
+    <p>تطوير: مــرتــضــى</p>
+    <p>@xa_qu</p>
+</footer>
+
+<script>
+const urlInput = document.getElementById("url");
+const message = document.getElementById("message");
+
+async function getInfo(){
+    const url = urlInput.value.trim();
+    if(!url){
+        message.textContent = "من فضلك ضع رابط الفيديو أولاً";
+        return;
+    }
+
+    const btn = document.getElementById("infoBtn");
+    btn.disabled = true;
+    message.textContent = "جارٍ فحص الرابط...";
+
+    try{
+        const response = await fetch("/api/info",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({url})
+        });
+
+        const data = await response.json();
+        if(!response.ok) throw new Error(data.error || "تعذر فحص الرابط");
+
+        document.getElementById("title").textContent =
+            data.title || "تم العثور على الفيديو";
+
+        document.getElementById("platform").textContent =
+            "المنصة: " + (data.platform || "غير معروفة");
+
+        const thumb = document.getElementById("thumb");
+        if(data.thumbnail){
+            thumb.src = data.thumbnail;
+            thumb.style.display = "block";
+        }else{
+            thumb.style.display = "none";
+        }
+
+        document.getElementById("result").style.display = "block";
+        message.textContent = "تم فحص الرابط بنجاح ✅";
+
+    }catch(error){
+        message.textContent = error.message;
+    }finally{
+        btn.disabled = false;
+    }
+}
+
+async function downloadVideo(){
+    const url = urlInput.value.trim();
+    const quality = document.getElementById("quality").value;
+
+    if(!url){
+        message.textContent = "ضع رابط الفيديو أولاً";
+        return;
+    }
+
+    const btn = document.getElementById("downloadBtn");
+    btn.disabled = true;
+    message.textContent = "جارٍ تجهيز الملف... يرجى الانتظار";
+
+    try{
+        const response = await fetch("/download",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({url,quality})
+        });
+
+        if(!response.ok){
+            const data = await response.json();
+            throw new Error(data.error || "فشل التحميل");
+        }
+
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        const objectUrl = URL.createObjectURL(blob);
+
+        link.href = objectUrl;
+        link.download = "mortada-download";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(objectUrl);
+        message.textContent = "تم تجهيز التحميل بنجاح ✅";
+
+    }catch(error){
+        message.textContent = error.message;
+    }finally{
+        btn.disabled = false;
+    }
+}
+</script>
+
+</body>
+  </html>
+  
