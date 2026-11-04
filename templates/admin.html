@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة إدارة MORTADA EMPIRE</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    padding:20px;
+    background:#f1f5fb;
+    font-family:Arial,sans-serif;
+    color:#183153;
+}
+.container{
+    max-width:750px;
+    margin:25px auto;
+}
+header{
+    background:#0866d6;
+    color:white;
+    padding:25px;
+    text-align:center;
+    border-radius:16px;
+}
+.card{
+    background:white;
+    margin-top:20px;
+    padding:22px;
+    border-radius:15px;
+    box-shadow:0 4px 18px #0000000d;
+}
+h2{color:#0866d6}
+input,button{
+    width:100%;
+    padding:14px;
+    margin-top:12px;
+    border-radius:9px;
+    font-size:16px;
+}
+input{border:1px solid #ccd8e8}
+button{
+    border:0;
+    background:#0866d6;
+    color:white;
+    font-weight:bold;
+}
+button:hover{opacity:.9}
+.danger{background:#d93636}
+#message{
+    padding:12px;
+    margin-top:15px;
+    border-radius:8px;
+    background:#eef5ff;
+    overflow-wrap:anywhere;
+}
+.stat{
+    background:#eef5ff;
+    padding:15px;
+    border-radius:10px;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <h1>👑 MORTADA EMPIRE</h1>
+    <p>لوحة تحكم المدير</p>
+    <p>المطور: مــرتــضــى | @xa_qu</p>
+</header>
+
+<div class="card">
+    <h2>📊 إحصائيات الموقع</h2>
+    <div class="stat">
+        <strong>حالة الخادم:</strong>
+        <span id="status">جارٍ الفحص...</span>
+    </div>
+    <button onclick="getStats()">تحديث الإحصائيات</button>
+</div>
+
+<div class="card">
+    <h2>⚙️ إدارة الموقع</h2>
+    <p>هذه اللوحة مخصصة لإدارة الموقع ومراقبة حالته.</p>
+    <button onclick="health()">فحص اتصال الموقع</button>
+    <div id="message">مرحباً بك في لوحة الإدارة.</div>
+</div>
+
+<div class="card">
+    <h2>🔐 معلومات الأمان</h2>
+    <p>الدخول لهذه الصفحة يجب أن يكون محمياً بكلمة مرور المدير.</p>
+    <p>لا تشارك كلمة مرور الإدارة مع أي شخص.</p>
+</div>
+
+</div>
+
+<script>
+async function health(){
+    const msg=document.getElementById("message");
+    msg.textContent="جارٍ فحص الاتصال...";
+
+    try{
+        const response=await fetch("/health");
+        const data=await response.json();
+
+        if(!response.ok) throw new Error("تعذر الاتصال");
+
+        msg.textContent="حالة الموقع: "+(data.status || "يعمل");
+        document.getElementById("status").textContent="متصل ✅";
+
+    }catch(error){
+        msg.textContent="حدث خطأ أثناء الاتصال بالموقع.";
+        document.getElementById("status").textContent="غير متصل";
+    }
+}
+
+async function getStats(){
+    await health();
+}
+</script>
+
+</body>
+      </html>
+  
