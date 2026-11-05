@@ -1,4 +1,4 @@
-🍧
+
 # -*- coding: utf-8 -*-
 
 import os
@@ -11,9 +11,6 @@ from urllib.parse import urlparse
 from flask import Flask, request, jsonify, Response, render_template, send_file
 import yt_dlp
 
-# ═══════════════════════════════════════
-#          MORTADA EMPIRE
-# ═══════════════════════════════════════
 
 APP_NAME = "MORTADA EMPIRE"
 DEVELOPER = "مــرتــضــى"
@@ -29,15 +26,20 @@ app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
 
 ALLOWED_DOMAINS = (
-    "youtube.com", "youtu.be", "tiktok.com",
-    "facebook.com", "fb.watch", "instagram.com",
-    "twitter.com", "x.com", "pinterest.com",
-    "reddit.com", "dailymotion.com", "vimeo.com"
+    "youtube.com",
+    "youtu.be",
+    "tiktok.com",
+    "facebook.com",
+    "fb.watch",
+    "instagram.com",
+    "twitter.com",
+    "x.com",
+    "pinterest.com",
+    "reddit.com",
+    "dailymotion.com",
+    "vimeo.com",
 )
 
-# ═══════════════════════════════════════
-#                 DATABASE
-# ═══════════════════════════════════════
 
 def init_db():
     connection = sqlite3.connect(DB_NAME)
@@ -53,9 +55,6 @@ def init_db():
 
 init_db()
 
-# ═══════════════════════════════════════
-#               URL VALIDATION
-# ═══════════════════════════════════════
 
 def validate_url(url):
     if not isinstance(url, str) or len(url) > 2048:
@@ -80,10 +79,6 @@ def validate_url(url):
     except Exception:
         return False
 
-
-# ═══════════════════════════════════════
-#                ADMIN LOGIN
-# ═══════════════════════════════════════
 
 def admin_required():
     auth = request.authorization
@@ -117,10 +112,6 @@ def admin_login_required():
     return None
 
 
-# ═══════════════════════════════════════
-#               YT-DLP OPTIONS
-# ═══════════════════════════════════════
-
 def get_ydl_options():
     return {
         "quiet": True,
@@ -133,18 +124,10 @@ def get_ydl_options():
     }
 
 
-# ═══════════════════════════════════════
-#                    HOME
-# ═══════════════════════════════════════
-
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
-# ═══════════════════════════════════════
-#               VIDEO INFORMATION
-# ═══════════════════════════════════════
 
 @app.route("/api/info", methods=["POST"])
 def video_info():
@@ -167,7 +150,7 @@ def video_info():
             "title": info.get("title", "Video"),
             "platform": info.get("extractor_key", "Unknown"),
             "thumbnail": info.get("thumbnail"),
-            "duration": info.get("duration")
+            "duration": info.get("duration"),
         })
 
     except Exception:
@@ -176,10 +159,6 @@ def video_info():
             "error": "تعذر فحص الرابط، حاول مرة أخرى"
         }), 400
 
-
-# ═══════════════════════════════════════
-#                    DOWNLOAD
-# ═══════════════════════════════════════
 
 @app.route("/download", methods=["POST"])
 def download_video():
@@ -246,19 +225,14 @@ def download_video():
 
         return response
 
-    
- except Exception:
+    except Exception:
         app.logger.exception("Download error")
         shutil.rmtree(temp_dir, ignore_errors=True)
+
         return jsonify({
             "error": "تعذر تنزيل الرابط. تحقق منه وحاول مرة أخرى."
         }), 400
 
-
-
-# ═══════════════════════════════════════
-#                 ADMIN PANEL
-# ═══════════════════════════════════════
 
 @app.route("/admin")
 def admin():
@@ -270,22 +244,14 @@ def admin():
     return render_template("admin.html")
 
 
-# ═══════════════════════════════════════
-#                   HEALTH
-# ═══════════════════════════════════════
-
 @app.route("/health")
 def health():
     return jsonify({
         "status": "ok",
         "name": APP_NAME,
-        "developer": DEVELOPER
+        "developer": DEVELOPER,
     })
 
-
-# ═══════════════════════════════════════
-#                  ERRORS
-# ═══════════════════════════════════════
 
 @app.errorhandler(404)
 def not_found(error):
@@ -308,10 +274,6 @@ def server_error(error):
         "error": "حدث خطأ داخلي في الخادم"
     }), 500
 
-
-# ═══════════════════════════════════════
-#                  RUN SERVER
-# ═══════════════════════════════════════
 
 if __name__ == "__main__":
     app.run(
