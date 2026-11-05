@@ -1,5 +1,4 @@
 
-
 # -*- coding: utf-8 -*-
 
 import os
@@ -119,7 +118,7 @@ def admin_login_required():
 
 
 # ═══════════════════════════════════════
-#                YT-DLP OPTIONS
+#               YT-DLP OPTIONS
 # ═══════════════════════════════════════
 
 def get_ydl_options():
@@ -284,7 +283,7 @@ def health():
 
 
 # ═══════════════════════════════════════
-#                   ERRORS
+#                  ERRORS
 # ═══════════════════════════════════════
 
 @app.errorhandler(404)
