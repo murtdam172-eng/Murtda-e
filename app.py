@@ -1,4 +1,4 @@
-
+🍧
 # -*- coding: utf-8 -*-
 
 import os
@@ -246,13 +246,14 @@ def download_video():
 
         return response
 
-    except Exception as error:
+    
+ except Exception:
         app.logger.exception("Download error")
         shutil.rmtree(temp_dir, ignore_errors=True)
-
         return jsonify({
             "error": "تعذر تنزيل الرابط. تحقق منه وحاول مرة أخرى."
         }), 400
+
 
 
 # ═══════════════════════════════════════
