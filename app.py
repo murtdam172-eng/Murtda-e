@@ -1,6 +1,4 @@
 
-# -*- coding: utf-8 -*-
-
 import os
 import hmac
 import sqlite3
@@ -150,7 +148,7 @@ def video_info():
             "title": info.get("title", "Video"),
             "platform": info.get("extractor_key", "Unknown"),
             "thumbnail": info.get("thumbnail"),
-            "duration": info.get("duration"),
+            "duration": info.get("duration")
         })
 
     except Exception:
@@ -249,7 +247,7 @@ def health():
     return jsonify({
         "status": "ok",
         "name": APP_NAME,
-        "developer": DEVELOPER,
+        "developer": DEVELOPER
     })
 
 
