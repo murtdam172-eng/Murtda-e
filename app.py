@@ -251,7 +251,7 @@ def download_video():
         shutil.rmtree(temp_dir, ignore_errors=True)
 
         return jsonify({
-            "error": str(error)[:250]
+            "error": "تعذر تنزيل الرابط. تحقق منه وحاول مرة أخرى."
         }), 400
 
 
